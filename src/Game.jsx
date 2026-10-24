@@ -157,6 +157,9 @@ function Game() {
       }
 
       setMessage(`You landed on $${value}. Pick a consonant.`)
+
+      setRoundTotal(prevBank => prevBank + parseInt(value));
+      
     }, 3900)
   }
 
