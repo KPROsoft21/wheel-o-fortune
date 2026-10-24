@@ -1,0 +1,97 @@
+.btn {
+    background-color: slateblue;
+    color: white;
+    text-align: center;
+    border: 0px solid white;
+    border-radius: 50px;
+
+    cursor: pointer;
+    width: 250px;
+    height: 50px;
+
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    font-size: x-large;
+    font-display: block;
+    position: absolute;
+    top: 43%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+}
+
+.wheel-container {
+    position: relative;
+    width: 350px;
+    height: 350px;
+}
+
+.Menu {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    min-height: 100vh;
+    gap: 50px;
+
+}
+
+body {
+    background: linear-gradient(135deg,
+            #001a00,
+            #004d00,
+            #00b300,
+            #39ff14,
+            #ccff00);
+
+    background-size: 400% 400%;
+    animation: gradientMove 15s ease infinite;
+    min-height: 100vh;
+}
+
+@keyframes gradientMove {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+
+
+.menu-wheel {
+    width: 300px;
+    height: 300px;
+    animation: spin 10s linear infinite, glow 2s ease-in-out infinite alternate;
+    ;
+
+    filter: drop-shadow(0 0 20px white);
+
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes glow {
+    from {
+        filter: drop-shadow(0 0 5px gold);
+    }
+
+    to {
+        filter:
+            drop-shadow(0 0 20px gold) drop-shadow(0 0 35px orange);
+    }
+}
