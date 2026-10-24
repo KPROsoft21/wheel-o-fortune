@@ -7,10 +7,13 @@ function Menu({ onStart }) {
             <h1>Wheel Of Fortune!</h1>
 
             <div className='wheel-container'>
+                {/* The wheel svg */}
                 <img src={wheel} alt="Wheel of Fortune" className="menu-wheel">
 
                 </img>
 
+                {/* When the button is clicked it will call the onStart function defined
+                    inside of App.jsx */}
                 <button onClick={onStart} className='btn'>
                     Play
                 </button>

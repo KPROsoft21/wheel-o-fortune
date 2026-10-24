@@ -1,3 +1,4 @@
+/* Styles the button*/
 .btn {
     background-color: slateblue;
     color: white;
@@ -12,21 +13,28 @@
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
     font-size: x-large;
     font-display: block;
+
+    /* The positioning of the button*/
     position: absolute;
     top: 43%;
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 2;
 }
-
+/* The container for the wheel this acts as the parent 
+    for anything inside this container*/
 .wheel-container {
     position: relative;
     width: 350px;
     height: 350px;
 }
 
+/* Styles the menu */
 .Menu {
+    /* Using a flexbox to arrangle elements*/
     display: flex;
+    /* The direction of the flexbox is vertical Stacking
+        elements vertically*/
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -37,6 +45,7 @@
 }
 
 body {
+    /* The color of the background is a linear gradient*/
     background: linear-gradient(135deg,
             #001a00,
             #004d00,
@@ -49,6 +58,7 @@ body {
     min-height: 100vh;
 }
 
+/* Animation for the linear gradient background*/
 @keyframes gradientMove {
     0% {
         background-position: 0% 50%;
@@ -64,10 +74,11 @@ body {
 }
 
 
-
+/* Styling for the wheel */
 .menu-wheel {
     width: 300px;
     height: 300px;
+    /* Animation for the wheel */
     animation: spin 10s linear infinite, glow 2s ease-in-out infinite alternate;
     ;
 
@@ -75,6 +86,7 @@ body {
 
 }
 
+/* Animating the wheel to spin*/
 @keyframes spin {
     from {
         transform: rotate(0deg);
@@ -85,6 +97,7 @@ body {
     }
 }
 
+/* Adds a pulsing glow animation for the wheel*/
 @keyframes glow {
     from {
         filter: drop-shadow(0 0 5px gold);
