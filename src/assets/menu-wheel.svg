@@ -1,31 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="400px" height="400px" >
-    <circle cx="200" cy="200" r="195" fill="#222" stroke="gold" stroke-width="8" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <circle cx="200" cy="200" r="195" fill="#07372a" stroke="#e4bf75" stroke-width="10" />
 
-    <g stroke="#222" stroke-width="2">
-    <path d="M200 200 L200 10 A190 190 0 0 1 295 35.5 Z" fill="#ef4444"/>
-    <path d="M200 200 L295 35.5 A190 190 0 0 1 364.5 105 Z" fill="#3b82f6"/>
-    <path d="M200 200 L364.5 105 A190 190 0 0 1 390 200 Z" fill="#22c55e"/>
-    <path d="M200 200 L390 200 A190 190 0 0 1 364.5 295 Z" fill="#eab308"/>
-    <path d="M200 200 L364.5 295 A190 190 0 0 1 295 364.5 Z" fill="#a855f7"/>
-    <path d="M200 200 L295 364.5 A190 190 0 0 1 200 390 Z" fill="#f97316"/>
-    <path d="M200 200 L200 390 A190 190 0 0 1 105 364.5 Z" fill="#06b6d4"/>
-    <path d="M200 200 L105 364.5 A190 190 0 0 1 35.5 295 Z" fill="#ec4899"/>
-    <path d="M200 200 L35.5 295 A190 190 0 0 1 10 200 Z" fill="#84cc16"/>
-    <path d="M200 200 L10 200 A190 190 0 0 1 35.5 105 Z" fill="#6366f1"/>
-    <path d="M200 200 L35.5 105 A190 190 0 0 1 105 35.5 Z" fill="#f59e0b"/>
-    <path d="M200 200 L105 35.5 A190 190 0 0 1 200 10 Z" fill="#14b8a6"/>
+  <!-- Match the game wheel's twelve slices, starting at the top. -->
+  <g stroke="#173b2d" stroke-width="2">
+    <path d="M200 200 L200 10 A190 190 0 0 1 295 35.5 Z" fill="#2563eb" />
+    <path d="M200 200 L295 35.5 A190 190 0 0 1 364.5 105 Z" fill="#db2777" />
+    <path d="M200 200 L364.5 105 A190 190 0 0 1 390 200 Z" fill="#ea580c" />
+    <path d="M200 200 L390 200 A190 190 0 0 1 364.5 295 Z" fill="#16a34a" />
+    <path d="M200 200 L364.5 295 A190 190 0 0 1 295 364.5 Z" fill="#111827" />
+    <path d="M200 200 L295 364.5 A190 190 0 0 1 200 390 Z" fill="#7c3aed" />
+    <path d="M200 200 L200 390 A190 190 0 0 1 105 364.5 Z" fill="#0891b2" />
+    <path d="M200 200 L105 364.5 A190 190 0 0 1 35.5 295 Z" fill="#ca8a04" />
+    <path d="M200 200 L35.5 295 A190 190 0 0 1 10 200 Z" fill="#475569" />
+    <path d="M200 200 L10 200 A190 190 0 0 1 35.5 105 Z" fill="#dc2626" />
+    <path d="M200 200 L35.5 105 A190 190 0 0 1 105 35.5 Z" fill="#0d9488" />
+    <path d="M200 200 L105 35.5 A190 190 0 0 1 200 10 Z" fill="#9333ea" />
   </g>
 
- <circle cx="200" cy="200" r="48"
-          fill="gold"
-          stroke="#222"
-          stroke-width="6"/>    
-          
-    <text x="200" y="208"
-        text-anchor="middle"
-        font-size="24"
-        font-weight="bold"
-        fill="#222">
-    WOF
-  </text>
+  <circle cx="200" cy="200" r="195" fill="none" stroke="#e4bf75" stroke-width="10" />
+
 </svg>

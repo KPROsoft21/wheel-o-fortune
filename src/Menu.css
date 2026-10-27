@@ -1,9 +1,9 @@
 /* Styles the button*/
 .btn {
-    background-color: slateblue;
-    color: white;
+    background-color: #e5bc64;
+    color: #173b2d;
     text-align: center;
-    border: 0px solid white;
+    border: 2px solid #fff1c9;
     border-radius: 50px;
 
     cursor: pointer;
@@ -12,11 +12,10 @@
 
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
     font-size: x-large;
-    font-display: block;
 
     /* The positioning of the button*/
     position: absolute;
-    top: 43%;
+    top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 2;
@@ -27,6 +26,20 @@
     position: relative;
     width: 350px;
     height: 350px;
+    display: grid;
+    place-items: center;
+}
+
+.menu-pointer {
+    position: absolute;
+    top: 24px;
+    left: 50%;
+    z-index: 1;
+    width: 26px;
+    height: 36px;
+    background: #f2c96d;
+    clip-path: polygon(50% 100%, 0 0, 100% 0);
+    transform: translateX(-50%);
 }
 
 /* Styles the menu */
@@ -44,14 +57,19 @@
 
 }
 
+.Menu h1 {
+    color: #fff8e8;
+    text-shadow: 0 3px 12px rgba(2, 31, 24, 0.5);
+}
+
 body {
     /* The color of the background is a linear gradient*/
     background: linear-gradient(135deg,
-            #001a00,
-            #004d00,
-            #00b300,
-            #39ff14,
-            #ccff00);
+            #04291f,
+            #0b5a40,
+            #176f4a,
+            #0b5a40,
+            #04291f);
 
     background-size: 400% 400%;
     animation: gradientMove 15s ease infinite;
@@ -82,7 +100,7 @@ body {
     animation: spin 10s linear infinite, glow 2s ease-in-out infinite alternate;
     ;
 
-    filter: drop-shadow(0 0 20px white);
+    filter: drop-shadow(0 0 20px #e5bc64);
 
 }
 

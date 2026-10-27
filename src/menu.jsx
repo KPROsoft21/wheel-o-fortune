@@ -8,14 +8,15 @@ function Menu({ onStart }) {
 
             <div className='wheel-container'>
                 {/* The wheel svg */}
-                <img src={wheel} alt="Wheel of Fortune" className="menu-wheel">
+                <img src={wheel} alt="Colorful game wheel" className="menu-wheel">
 
                 </img>
+                <div className="menu-pointer" aria-hidden="true" />
 
                 {/* When the button is clicked it will call the onStart function defined
                     inside of App.jsx */}
                 <button onClick={onStart} className='btn'>
-                    Play
+                    Start
                 </button>
             </div>
 
