@@ -1,5 +1,7 @@
 # Wheel of Fortune Prototype
 
+https://wheel-o-fortune.vercel.app/
+
 A simple React prototype inspired by the TV game show format. The app includes a puzzle board, category display, animated money wheel, consonant guesses, vowel purchases, special wheel spaces, solving, and basic score tracking.
 
 ## Overview
