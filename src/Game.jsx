@@ -15,6 +15,17 @@ const puzzles = [
 ]
 const totalRounds = 3
 
+function drawPuzzles() {
+  const order = puzzles.map((_, index) => index)
+  for (let index = order.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1))
+    const chosen = order[swapIndex]
+    order[swapIndex] = order[index]
+    order[index] = chosen
+  }
+  return order.slice(0, totalRounds)
+}
+
 // Each item here becomes one slice on the wheel.
 const wheelValues = [
   500,
@@ -34,6 +45,7 @@ const wheelValues = [
 // These helper lists make it easy to tell vowels and consonants apart.
 const vowels = ['A', 'E', 'I', 'O', 'U']
 const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
+const boardWidths = [12, 14, 14, 12]
 const initialPlayers = [1, 2, 3].map((number) => ({
   name: `Player ${number}`,
   bank: 0,
@@ -80,10 +92,46 @@ function normalizeAnswer(value) {
   return value.trim().replace(/\s+/g, ' ').toUpperCase()
 }
 
+// Keep the board shape fixed while centering whole words in its rows.
+function buildPuzzleRows(answer) {
+  const words = answer.split(' ')
+
+  function fitWords(widths) {
+    const lines = widths.map(() => '')
+    let row = 0
+
+    for (const word of words) {
+      while (row < widths.length) {
+        const next = lines[row] ? `${lines[row]} ${word}` : word
+        if (next.length <= widths[row]) {
+          lines[row] = next
+          break
+        }
+        row += 1
+      }
+      if (row === widths.length) return null
+    }
+    return lines
+  }
+
+  const lines = fitWords([14, 14])
+  const rowText = lines ? ['', ...lines, ''] : fitWords(boardWidths)
+  if (!rowText) throw new Error(`Puzzle is too long for the board: ${answer}`)
+
+  return boardWidths.map((width, row) => {
+    const cells = Array(width).fill('')
+    const start = Math.floor((width - rowText[row].length) / 2)
+    for (const [index, char] of [...rowText[row]].entries()) {
+      cells[start + index] = char
+    }
+    return cells
+  })
+}
+
 
 function Game() {
-  // puzzleIndex chooses which puzzle from the puzzles list is currently active.
-  const [puzzleIndex, setPuzzleIndex] = useState(0)
+  const [roundIndex, setRoundIndex] = useState(0)
+  const [puzzleOrder, setPuzzleOrder] = useState(drawPuzzles)
 
   // guessedLetters controls which letters are visible on the board.
   const [guessedLetters, setGuessedLetters] = useState([])
@@ -109,14 +157,15 @@ function Game() {
   const [solveGuess, setSolveGuess] = useState('')
 
   // Pull the current puzzle object from the puzzle list.
-  const puzzle = puzzles[puzzleIndex]
+  const puzzle = puzzles[puzzleOrder[roundIndex]]
+  const boardRows = buildPuzzleRows(puzzle.answer)
 
   // Track only real answer letters; spaces and punctuation do not need guesses.
   const answerLetters = useMemo(
     () => new Set(puzzle.answer.replace(/[^A-Z]/g, '').split('')),
     [puzzle.answer],
   )
-  const gameOver = isSolved && puzzleIndex === totalRounds - 1
+  const gameOver = isSolved && roundIndex === totalRounds - 1
   const highestBank = Math.max(...players.map((player) => player.bank))
   const winners = gameOver
     ? players.filter((player) => player.bank === highestBank)
@@ -153,8 +202,8 @@ function Game() {
   }
 
   // Clears the current round and optionally jumps to a different puzzle.
-  function resetRound(nextIndex = puzzleIndex) {
-    setPuzzleIndex(nextIndex)
+  function resetRound(nextIndex = roundIndex) {
+    setRoundIndex(nextIndex)
     setGuessedLetters([])
     setSpinValue(null)
     setIsBuyingVowel(false)
@@ -264,10 +313,11 @@ function Game() {
   function nextRound() {
     if (!isSolved || gameOver) return
     setActivePlayer((current) => (current + 1) % players.length)
-    resetRound(puzzleIndex + 1)
+    resetRound(roundIndex + 1)
   }
 
   function newGame() {
+    setPuzzleOrder(drawPuzzles())
     setPlayers(initialPlayers.map((player) => ({ ...player })))
     setActivePlayer(0)
     resetRound(0)
@@ -286,7 +336,7 @@ function Game() {
         {/* Header shows the puzzle category and the current money totals. */}
         <div className="game-header">
           <div>
-            <p className="eyebrow">Wheel of Fortune · Round {puzzleIndex + 1} of {totalRounds}</p>
+            <p className="eyebrow">Wheel of Fortune · Round {roundIndex + 1} of {totalRounds}</p>
             <h1>{puzzle.category}</h1>
           </div>
         </div>
@@ -305,22 +355,19 @@ function Game() {
           ))}
         </div>
 
-        {/* The puzzle board creates one tile per character in the answer. */}
-        <div className="puzzle-board" aria-label="Puzzle board">
-          {puzzle.answer.split('').map((char, index) => {
-            const isLetter = /[A-Z]/.test(char)
-            const isRevealed = guessedLetters.includes(char) || isSolved
-
-            return (
-              // Non-letter characters become blank spacer tiles.
-              <span
-                className={isLetter ? 'tile' : 'tile blank'}
-                key={`${char}-${index}`}
-              >
-                {isLetter && isRevealed ? char : ''}
-              </span>
-            )
-          })}
+        <div className="puzzle-marquee">
+          {/* The puzzle board creates one tile per character in the answer. */}
+          <div className="puzzle-board" aria-label="Puzzle board">
+            {boardRows.map((row, rowIndex) => (
+              <div className={`puzzle-row${row.length === 12 ? ' short' : ''}`} key={rowIndex}>
+                {row.map((char, index) => (
+                  <span className={/[A-Z]/.test(char) ? 'tile letter' : 'tile'} key={index}>
+                    {(guessedLetters.includes(char) || isSolved) && /[A-Z]/.test(char) ? char : ''}
+                  </span>
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* aria-live lets screen readers announce game messages as they change. */}

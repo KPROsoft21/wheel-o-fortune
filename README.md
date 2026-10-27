@@ -15,12 +15,11 @@ This project is meant to be a buildable starting point rather than a complete pr
 - Consonant guessing after a money spin
 - Vowel buying when the round total is at least `$250`
 - Separate round totals and banked winnings for three players
-- Three rounds followed by a winner based on banked winnings, with ties shown
+- Three randomly selected rounds without repeated puzzles, followed by a winner based on banked winnings, with ties shown
 - Turn rotation after missed guesses, incorrect solves, `BANKRUPT`, and `LOSE A TURN`
 - Full-puzzle solve input
 - Next round, reset round, and play again controls
 - Responsive layout for desktop and smaller screens
-- `steps.md` build log for project history and command notes
 
 ## Tech Stack
 
@@ -74,14 +73,13 @@ wheel-of-fortune/
     index.css              Global CSS defaults
     main.jsx               React app entry point
   README.md
-  steps.md
   package.json
   vite.config.js
 ```
 
 ## Gameplay Notes
 
-The prototype uses a small in-code puzzle list inside `src/Game.jsx`. Three players share the puzzle board and take turns. Correct consonants add the landed wheel value for each matching letter to the current player's round total. Vowels cost `$250`. A missed guess, incorrect solve, `BANKRUPT`, or `LOSE A TURN` passes play to the next player. Bankrupt clears only that player's round total. Solving the puzzle banks the solver's round total. After each of the first two solves, Next Round clears round totals and keeps each player's bank. After the third solve, the highest bank wins; equal top scores produce a tie. Play Again starts a new three-round game.
+The prototype uses a small in-code puzzle list inside `src/Game.jsx`. Each game draws three puzzles at random without repeats. Three players share the puzzle board and take turns. Correct consonants add the landed wheel value for each matching letter to the current player's round total. Vowels cost `$250`. A missed guess, incorrect solve, `BANKRUPT`, or `LOSE A TURN` passes play to the next player. Bankrupt clears only that player's round total. Solving the puzzle banks the solver's round total. After each of the first two solves, Next Round clears round totals and keeps each player's bank. After the third solve, the highest bank wins; equal top scores produce a tie. Play Again starts a new three-round game with a new random draw.
 
 ## Future Improvements
 
