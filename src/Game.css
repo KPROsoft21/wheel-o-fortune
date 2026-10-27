@@ -44,24 +44,30 @@ h1 {
   line-height: 0.98;
 }
 
-/* Holds the current round money and total banked money. */
+/* Show each player's round money and bank, with the current turn highlighted. */
 .scoreboard {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 10px;
-  min-width: 220px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
 }
 
-/* Makes each score look like a small display panel. */
-.scoreboard span,
-.scoreboard strong {
-  min-width: 104px;
-  padding: 10px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
+.player-score {
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
   background: rgba(15, 23, 42, 0.34);
-  text-align: center;
+}
+
+.player-score.active,
+.player-score.winner {
+  border-color: #facc15;
+  background: rgba(250, 204, 21, 0.17);
+}
+
+.player-score strong {
+  color: #fde68a;
 }
 
 /* The main letter board that shows blank and revealed puzzle tiles. */
@@ -103,6 +109,17 @@ h1 {
   color: #fef3c7;
   font-size: 20px;
   font-weight: 800;
+}
+
+.game-result {
+  margin: 0;
+  padding: 16px 20px;
+  border: 2px solid #facc15;
+  border-radius: 10px;
+  background: rgba(250, 204, 21, 0.17);
+  color: #fef3c7;
+  font-size: 24px;
+  font-weight: 900;
 }
 
 /* Form for typing the full puzzle answer. */
@@ -279,6 +296,15 @@ h1 {
   background: #facc15;
 }
 
+.actions .vowel-button {
+  background: #ccfbf1;
+}
+
+.actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
 /* Small hover feedback for clickable buttons. */
 button:hover:not(:disabled) {
   filter: brightness(0.94);
@@ -306,10 +332,6 @@ input:focus {
     flex-direction: column;
   }
 
-  .scoreboard {
-    justify-content: flex-start;
-  }
-
   /* Use fewer board columns so tiles stay readable on narrow screens. */
   .puzzle-board {
     grid-template-columns: repeat(10, minmax(24px, 1fr));
@@ -335,6 +357,10 @@ input:focus {
 
 /* Very small screens stack the solve input and button. */
 @media (max-width: 560px) {
+  .scoreboard {
+    grid-template-columns: 1fr;
+  }
+
   .solve-form {
     flex-direction: column;
   }

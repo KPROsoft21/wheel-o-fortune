@@ -1,15 +1,19 @@
 import { useMemo, useState } from 'react'
-import {useEffect} from "react";
 import MockAd from './MockAd';
 import './Game.css'
 
 // These are the sample puzzles the game can cycle through.
 const puzzles = [
+  { category: 'Athlete', answer: 'LEBRON RAYMONE JAMES' },
+  { category: 'Building', answer: 'THE GREAT WALL OF CHINA' },
+  { category: 'Quote', answer: 'ICE IN THE VEINS' },
+  { category: 'Phrase', answer: 'A PIECE OF CAKE' },
   { category: 'Phrase', answer: 'A WALK IN THE PARK' },
   { category: 'Before & After', answer: 'COFFEE TABLE TENNIS' },
   { category: 'Place', answer: 'THE GRAND CANYON' },
   { category: 'Thing', answer: 'A BRIGHT IDEA' },
 ]
+const totalRounds = 3
 
 // Each item here becomes one slice on the wheel.
 const wheelValues = [
@@ -30,6 +34,11 @@ const wheelValues = [
 // These helper lists make it easy to tell vowels and consonants apart.
 const vowels = ['A', 'E', 'I', 'O', 'U']
 const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
+const initialPlayers = [1, 2, 3].map((number) => ({
+  name: `Player ${number}`,
+  bank: 0,
+  roundTotal: 0,
+}))
 
 // Wheel slice colors match the order of wheelValues above.
 const wheelColors = [
@@ -85,15 +94,16 @@ function Game() {
   // rotation is the CSS angle used to animate the wheel.
   const [rotation, setRotation] = useState(0)
 
-  // bank is the player's saved money, while roundTotal is only for the current puzzle.
-  const [bank, setBank] = useState(0)
-  const [roundTotal, setRoundTotal] = useState(0)
+  const [players, setPlayers] = useState(initialPlayers)
+  const [activePlayer, setActivePlayer] = useState(0)
+  const [isSolved, setIsSolved] = useState(false)
 
   // message is the short instruction/result text shown under the board.
   const [message, setMessage] = useState('Spin the wheel to start.')
 
   // isSpinning prevents clicking things while the wheel animation is running.
   const [isSpinning, setIsSpinning] = useState(false)
+  const [isBuyingVowel, setIsBuyingVowel] = useState(false)
 
   // solveGuess stores what the player types in the solve input.
   const [solveGuess, setSolveGuess] = useState('')
@@ -106,23 +116,57 @@ function Game() {
     () => new Set(puzzle.answer.replace(/[^A-Z]/g, '').split('')),
     [puzzle.answer],
   )
-  const isSolved = [...answerLetters].every((letter) =>
-    guessedLetters.includes(letter),
-  )
+  const gameOver = isSolved && puzzleIndex === totalRounds - 1
+  const highestBank = Math.max(...players.map((player) => player.bank))
+  const winners = gameOver
+    ? players.filter((player) => player.bank === highestBank)
+    : []
+  const winnerMessage = winners.length === 1
+    ? `${winners[0].name} wins with $${highestBank}!`
+    : `Tie: ${winners.map((player) => player.name).join(', ')} each banked $${highestBank}!`
+  const roundTotal = players[activePlayer].roundTotal
+  const canBuyVowel = !isSpinning && !isSolved && spinValue === null &&
+    roundTotal >= 250 && vowels.some((vowel) => !guessedLetters.includes(vowel))
+
+  function updateActivePlayer(changes) {
+    setPlayers((current) => current.map((player, index) =>
+      index === activePlayer ? { ...player, ...changes(player) } : player,
+    ))
+  }
+
+  function passTurn(message) {
+    const nextPlayer = (activePlayer + 1) % players.length
+    setSpinValue(null)
+    setIsBuyingVowel(false)
+    setSolveGuess('')
+    setActivePlayer(nextPlayer)
+    setMessage(`${message} ${players[nextPlayer].name}'s turn.`)
+  }
+
+  function finishPuzzle(total) {
+    setGuessedLetters([...answerLetters])
+    updateActivePlayer((player) => ({ bank: player.bank + total, roundTotal: total }))
+    setSpinValue(null)
+    setIsBuyingVowel(false)
+    setIsSolved(true)
+    setMessage(`${players[activePlayer].name} solved it and banked $${total}!`)
+  }
 
   // Clears the current round and optionally jumps to a different puzzle.
   function resetRound(nextIndex = puzzleIndex) {
     setPuzzleIndex(nextIndex)
     setGuessedLetters([])
     setSpinValue(null)
-    setRoundTotal(0)
+    setIsBuyingVowel(false)
+    setPlayers((current) => current.map((player) => ({ ...player, roundTotal: 0 })))
+    setIsSolved(false)
     setSolveGuess('')
     setMessage('Spin the wheel to start.')
   }
 
   // Spins the wheel, waits for the animation, then applies the landed value.
   function spinWheel() {
-    if (isSpinning || isSolved) return
+    if (isSpinning || isSolved || spinValue !== null || isBuyingVowel) return
 
     // Pick the result first, then animate the wheel to visually land there.
     const landedIndex = Math.floor(Math.random() * wheelValues.length)
@@ -145,14 +189,13 @@ function Game() {
 
       // Bankrupt wipes out only the current puzzle's money.
       if (value === 'BANKRUPT') {
-        setRoundTotal(0)
-        setMessage('Bankrupt. Your round total is back to $0.')
+        updateActivePlayer(() => ({ roundTotal: 0 }))
+        passTurn(`${players[activePlayer].name} went bankrupt.`)
         return
       }
 
-      // This prototype does not have multiple players yet, so it just tells the user.
       if (value === 'LOSE A TURN') {
-        setMessage('Lose a turn. Spin again when you are ready.')
+        passTurn(`${players[activePlayer].name} lost a turn.`)
         return
       }
 
@@ -162,34 +205,43 @@ function Game() {
 
   // Handles both consonant guesses and vowel purchases.
   function guessLetter(letter) {
-    if (guessedLetters.includes(letter) || isSolved) return
+    if (guessedLetters.includes(letter) || isSolved || isSpinning) return
+    const isVowel = vowels.includes(letter)
+    if (isVowel ? !canBuyVowel || !isBuyingVowel : typeof spinValue !== 'number') return
+    if (isVowel) setIsBuyingVowel(false)
 
     // Count how many times the guessed letter appears in the answer.
     const nextLetters = [...guessedLetters, letter]
     const count = puzzle.answer.split('').filter((char) => char === letter).length
-    const isVowel = vowels.includes(letter)
-
     setGuessedLetters(nextLetters)
 
     // Wrong guesses end the current spin value and ask for another spin.
     if (count === 0) {
-      setSpinValue(null)
-      setMessage(`No ${letter}. Spin again.`)
+      if (isVowel) updateActivePlayer((player) => ({ roundTotal: player.roundTotal - 250 }))
+      passTurn(`No ${letter}.`)
       return
     }
 
     // Vowels cost a flat amount and do not use the spun wheel value.
     if (isVowel) {
-      setRoundTotal((total) => Math.max(0, total - 250))
-      setMessage(`${count} ${letter}${count > 1 ? "'s" : ''}.`)
+      const nextTotal = roundTotal - 250
+      if ([...answerLetters].every((answerLetter) => nextLetters.includes(answerLetter))) finishPuzzle(nextTotal)
+      else {
+        updateActivePlayer(() => ({ roundTotal: nextTotal }))
+        setMessage(`${count} ${letter}${count > 1 ? "'s" : ''}. ${players[activePlayer].name} keeps the turn.`)
+      }
       return
     }
 
     // Consonants earn the wheel value for every matching letter.
     if (typeof spinValue === 'number') {
-      setRoundTotal((total) => total + count * spinValue)
-      setSpinValue(null)
-      setMessage(`${count} ${letter}${count > 1 ? "'s" : ''}. Spin again.`)
+      const nextTotal = roundTotal + count * spinValue
+      if ([...answerLetters].every((answerLetter) => nextLetters.includes(answerLetter))) finishPuzzle(nextTotal)
+      else {
+        updateActivePlayer(() => ({ roundTotal: nextTotal }))
+        setSpinValue(null)
+        setMessage(`${count} ${letter}${count > 1 ? "'s" : ''}. ${players[activePlayer].name} keeps the turn.`)
+      }
     }
   }
 
@@ -198,23 +250,27 @@ function Game() {
     event.preventDefault()
     const guess = normalizeAnswer(solveGuess)
 
-    if (!guess) return
+    if (!guess || isSolved || isSpinning) return
 
     if (guess === puzzle.answer) {
-      // Revealing every unique letter makes the board show the solved answer.
-      const allLetters = [...answerLetters]
-      setGuessedLetters(allLetters)
-      setBank((total) => total + roundTotal)
-      setMessage(`Solved! You banked $${roundTotal}.`)
+      finishPuzzle(roundTotal)
       return
     }
 
-    setMessage('Not quite. Keep playing.')
+    passTurn('Incorrect solve.')
   }
 
-  // Moves to the next puzzle and wraps back to the first one at the end.
-  function nextPuzzle() {
-    resetRound((puzzleIndex + 1) % puzzles.length)
+  // A solved puzzle advances the game until the third round is complete.
+  function nextRound() {
+    if (!isSolved || gameOver) return
+    setActivePlayer((current) => (current + 1) % players.length)
+    resetRound(puzzleIndex + 1)
+  }
+
+  function newGame() {
+    setPlayers(initialPlayers.map((player) => ({ ...player })))
+    setActivePlayer(0)
+    resetRound(0)
   }
 
   return (
@@ -230,13 +286,23 @@ function Game() {
         {/* Header shows the puzzle category and the current money totals. */}
         <div className="game-header">
           <div>
-            <p className="eyebrow">Wheel of Fortune Demo</p>
+            <p className="eyebrow">Wheel of Fortune · Round {puzzleIndex + 1} of {totalRounds}</p>
             <h1>{puzzle.category}</h1>
           </div>
-          <div className="scoreboard">
-            <span>Round ${roundTotal}</span>
-            <strong>Bank ${bank}</strong>
-          </div>
+        </div>
+
+        <div className="scoreboard" aria-label="Player scores">
+          {players.map((player, index) => (
+            <div
+              className={`player-score${index === activePlayer && !isSolved ? ' active' : ''}${gameOver && winners.some((winner) => winner.name === player.name) ? ' winner' : ''}`}
+              key={player.name}
+              aria-current={index === activePlayer && !isSolved ? 'true' : undefined}
+            >
+              <strong>{player.name}{index === activePlayer && !isSolved ? ' · Playing' : ''}</strong>
+              <span>Round ${player.roundTotal}</span>
+              <span>Bank ${player.bank}</span>
+            </div>
+          ))}
         </div>
 
         {/* The puzzle board creates one tile per character in the answer. */}
@@ -259,8 +325,10 @@ function Game() {
 
         {/* aria-live lets screen readers announce game messages as they change. */}
         <p className="status" aria-live="polite">
-          {isSolved ? 'Puzzle solved. Load the next one or keep tinkering.' : message}
+          {message}
         </p>
+
+        {gameOver && <p className="game-result" role="status">Final result after {totalRounds} rounds: {winnerMessage}</p>}
 
         {/* Players can type the full answer here when they think they know it. */}
         <form className="solve-form" onSubmit={solvePuzzle}>
@@ -269,8 +337,9 @@ function Game() {
             onChange={(event) => setSolveGuess(event.target.value)}
             placeholder="Solve the puzzle"
             aria-label="Solve the puzzle"
+            disabled={isSolved || isSpinning}
           />
-          <button type="submit">Solve</button>
+          <button type="submit" disabled={isSolved || isSpinning}>Solve</button>
         </form>
 
         {/* Letter buttons are disabled until the game rules allow that letter. */}
@@ -278,14 +347,14 @@ function Game() {
           {alphabet.map((letter) => {
             const isVowel = vowels.includes(letter)
             const canPickConsonant = typeof spinValue === 'number' && !isVowel
-            const canBuyVowel = isVowel && roundTotal >= 250
+            const canPickVowel = isVowel && canBuyVowel && isBuyingVowel
 
             // Consonants require a money spin; vowels require enough round cash.
             const disabled =
               guessedLetters.includes(letter) ||
               isSolved ||
               isSpinning ||
-              (!canPickConsonant && !canBuyVowel)
+              (!canPickConsonant && !canPickVowel)
 
             return (
               <button
@@ -337,19 +406,36 @@ function Game() {
         {/* Buttons for the main testing/demo actions. */}
         <div className="actions">
           <button
+            className="vowel-button"
+            type="button"
+            onClick={() => {
+              setIsBuyingVowel((current) => !current)
+              setMessage(isBuyingVowel ? 'Spin the wheel or solve the puzzle.' : 'Choose a vowel. It costs $250.')
+            }}
+            disabled={!canBuyVowel}
+          >
+            {isBuyingVowel ? 'Cancel Vowel' : 'Buy a Vowel · $250'}
+          </button>
+          <button
             className="spin-button"
             type="button"
             onClick={spinWheel}
-            disabled={isSpinning || isSolved}
+            disabled={isSpinning || isSolved || spinValue !== null || isBuyingVowel}
           >
             {isSpinning ? 'Spinning...' : 'Spin Wheel'}
           </button>
-          <button type="button" onClick={nextPuzzle}>
-            Next Puzzle
-          </button>
-          <button type="button" onClick={() => resetRound()}>
-            Reset Round
-          </button>
+          {gameOver ? (
+            <button type="button" onClick={newGame}>Play Again</button>
+          ) : (
+            <>
+              <button type="button" onClick={nextRound} disabled={!isSolved || isSpinning}>
+                Next Round
+              </button>
+              <button type="button" onClick={() => resetRound()} disabled={isSpinning || isSolved}>
+                Reset Round
+              </button>
+            </>
+          )}
         </div>
       </aside>
     </main>
