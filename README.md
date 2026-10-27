@@ -1,5 +1,4 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/KPROsoft21/WHEEL-OF-FORTUNE/main/wheel_of_fortune_exact_logo_1788214560645.jpg" width="450" alt="Wheel of Fortune logo">
   <h1><b>Wheel of Fortune</b></h1>
   <p>
     <a href="https://wheel-o-fortune.vercel.app/" target="_blank">
