@@ -1,91 +1,134 @@
-# Wheel of Fortune Prototype
+# Wheel of Fortune
 
-A polished React-based game prototype inspired by the classic television game show. This project recreates the core Wheel of Fortune experience in a lightweight, readable codebase built with Vite and React.
+A polished browser-based Wheel of Fortune-style game built with React and Vite. The project recreates the classic gameplay loop with a spinning wheel, player turns, puzzle solving, round progression, and final scoring in a clean, readable codebase.
+
+[![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://wheel-o-fortune.vercel.app/)  
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)](https://react.dev/)  
+[![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite)](https://vite.dev/)  
+[![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?logo=javascript)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 
 Live demo: https://wheel-o-fortune.vercel.app/
 
 ## Overview
 
-This repository is designed as a buildable starting point for a game prototype rather than a complete production application. The codebase emphasizes clarity, maintainability, and educational structure so future contributors can extend the gameplay, UI, and rules with minimal friction.
+Wheel of Fortune is a front-end game prototype inspired by the classic TV show. It includes a menu screen, a rotating prize wheel, clue categories, three-player turn-taking, letter guessing, vowel purchases, puzzle solving, and end-of-game winner detection.
 
-The app includes:
+This repository is intentionally structured as a clear and extensible prototype for learning, iteration, and future enhancement.
 
-- A menu screen and game screen flow
-- A spinning money wheel with special spaces
-- Puzzle board rendering and letter masking
-- Turn-based gameplay for three players
-- Vowel purchasing and solve mechanics
-- Round progression and final winner logic
+## Highlights
 
-## Features
-
-- TV-style puzzle board with hidden and revealed letters
-- Puzzle categories and sample answer bank
-- Animated wheel with dollar values, BANKRUPT, and LOSE A TURN
-- Fixed pointer alignment with wheel results
-- Consonant guessing after a valid spin
-- Vowel buying when the active player has at least $250 in round money
-- Separate round totals and banked winnings for three players
-- Three randomly selected rounds without repeated puzzles
-- Winner determination based on banked totals, including ties
-- Turn rotation after misses, bankruptcies, and lost turns
-- Full-puzzle solve input
-- Reset, replay, and next-round controls
+- Interactive spinning wheel with special spaces such as BANKRUPT and LOSE A TURN
+- Three-player turn system with separate round totals and banked totals
+- Puzzle board with hidden/revealed letters and category-based rounds
+- Vowel-buying mechanic and solve input for full puzzle attempts
+- Randomized round order across multiple puzzles
 - Responsive layout for desktop and smaller screens
+- Clean frontend architecture built with React and Vite
 
 ## Tech Stack
 
+This project is primarily built with the following technologies:
+
 - React 19
 - Vite 8
-- JavaScript
-- CSS Modules / component-level styling
-- Oxlint for linting
+- JavaScript (ES modules)
+- HTML5
+- CSS3
+- Oxlint for code quality checks
 
-## Prerequisites
+### Language Composition
 
-Before running the app locally, make sure you have the following installed:
+- JavaScript: 60.8%
+- CSS: 38.2%
+- HTML: 1.0%
 
-- Node.js 20.19+ or 22.12+ recommended
-- npm 10+
+## Project Structure
 
-> Note: Vite may warn if your local Node.js version is below the recommended minimum. The app was successfully built using Node 20.18.0 in development, but newer Node versions are recommended.
+```text
+wheel-o-fortune/
+├── public/                     Static assets and public files
+├── src/
+│   ├── App.jsx                 App-level screen flow and route state
+│   ├── Game.jsx                Core game logic and gameplay UI
+│   ├── Game.css                Styling for board, wheel, scoreboard, and layout
+│   ├── Menu.css                Landing screen styling
+│   ├── menu.jsx                Start menu component
+│   ├── MockAd.jsx              Placeholder ad component
+│   ├── index.css               Global app styling
+│   ├── main.jsx                React application entry point
+│   └── assets/
+│       └── menu-wheel.svg      SVG art for the intro screen
+├── .gitignore                  Ignore rules for generated and local files
+├── index.html                  HTML entry point
+├── package.json                Project metadata and scripts
+├── package-lock.json           Dependency lockfile
+├── vite.config.js             Vite configuration
+├── README.md                  Project documentation
+└── public/                    Additional public assets
+```
+
+## Features
+
+- TV-style puzzle board with masked letters and category display
+- Randomized puzzle selection across three rounds
+- Animated wheel with dollar values, bankrupt, and lose-a-turn outcomes
+- Fixed pointer alignment for the wheel spin mechanic
+- Consonant guessing after a valid spin
+- Vowel buying once the active player has at least $250 in round money
+- Separate round totals and bank totals for all players
+- Winner calculation based on bank totals, including tie handling
+- Reset and replay actions for testing and gameplay iteration
+
+## Architecture
+
+The app is intentionally simple and organized around a small set of core files:
+
+- `src/App.jsx` manages the screen state and transitions between the menu and the game
+- `src/menu.jsx` renders the landing/start screen
+- `src/Game.jsx` contains the gameplay engine, wheel logic, scoring, win conditions, and puzzle flow
+- `src/Game.css` contains the game-specific styling and responsive UI layout
+- `src/Menu.css` handles the start menu visual treatment
+
+This separation keeps the project readable and easy to expand as new game rules or UX improvements are added.
 
 ## Getting Started
 
-### 1. Clone the repository
+### Prerequisites
+
+Before running the app locally, make sure you have the following installed:
+
+- Node.js 20.19+ or newer LTS recommended
+- npm 10+
+
+### Installation
 
 ```bash
 git clone https://github.com/KPROsoft21/wheel-o-fortune.git
 cd wheel-o-fortune
-```
-
-### 2. Install dependencies
-
-```bash
 npm install
 ```
 
-### 3. Start the local development server
+### Run the development server
 
 ```bash
 npm run dev
 ```
 
-This starts the Vite development server and typically opens the app in the browser using the local Vite preview URL.
+This starts the Vite development server and launches the app locally in the browser.
 
-### 4. Build for production
+### Production build
 
 ```bash
 npm run build
 ```
 
-### 5. Run lint checks
+### Linting
 
 ```bash
 npm run lint
 ```
 
-### 6. Preview the production build locally
+### Local preview
 
 ```bash
 npm run preview
@@ -95,136 +138,39 @@ npm run preview
 
 | Script | Command | Purpose |
 | --- | --- | --- |
-| Development | `npm run dev` | Starts the Vite app for local development |
-| Production Build | `npm run build` | Compiles the project for deployment |
-| Lint | `npm run lint` | Runs Oxlint against the source code |
-| Preview | `npm run preview` | Serves the built app locally for testing |
+| Development | `npm run dev` | Starts the local Vite app |
+| Production Build | `npm run build` | Builds the app for deployment |
+| Lint | `npm run lint` | Runs code quality checks with Oxlint |
+| Preview | `npm run preview` | Serves the production build locally |
 
-## Project Structure
+## Contributors
 
-```text
-wheel-o-fortune/
-├── public/                     Static public assets
-├── src/
-│   ├── App.jsx                 Main app shell and screen switching logic
-│   ├── Game.jsx                Core Wheel of Fortune game logic and UI
-│   ├── Game.css                Gameplay layout, wheel styling, puzzle board, responsiveness
-│   ├── Menu.css                Menu screen styling and animated wheel visuals
-│   ├── MockAd.jsx              Placeholder advertising component shown above the game board
-│   ├── assets/
-│   │   └── menu-wheel.svg      SVG asset used by the landing screen
-│   ├── index.css               Global styles and base resets
-│   ├── main.jsx                React app entry point
-│   └── menu.jsx                Start menu component
-├── .gitignore                 Git ignore rules
-├── index.html                 HTML shell for Vite
-├── package.json                Project metadata and scripts
-├── package-lock.json           Lockfile for dependency integrity
-├── README.md                  Project documentation
-├── vite.config.js             Vite configuration
-└── public/                    Additional static assets if added later
-```
+This project was developed with contributions from the following people:
 
-## File-by-File Overview
-
-### Root files
-
-- `package.json`  
-  Configures the project scripts, dependencies, and tooling.
-
-- `vite.config.js`  
-  Defines the Vite configuration and enables React support.
-
-- `index.html`  
-  Provides the root DOM container for the React application.
-
-- `.gitignore`  
-  Excludes generated files and local tooling artifacts from source control.
-
-### `src/` directory
-
-- `main.jsx`  
-  Boots the React app and mounts it to the root HTML element.
-
-- `App.jsx`  
-  Manages the app screen state. It renders the start menu and switches into the play screen when the user begins.
-
-- `menu.jsx`  
-  Displays the landing menu screen with the animated wheel and start button.
-
-- `Menu.css`  
-  Styles the title screen, wheel illustration, and menu layout.
-
-- `Game.jsx`  
-  Contains the entire game engine: wheel values, letter handling, round logic, scoring, solve flow, player state, and rendering for the puzzle board.
-
-- `Game.css`  
-  Defines the visual treatment for the gameplay area, letter grid, scoreboard, wheel panel, and responsive layout.
-
-- `index.css`  
-  Establishes the base global styling, resets, and common application defaults.
-
-- `MockAd.jsx`  
-  A lightweight placeholder component that simulates a top-of-page ad slot in the UI.
-
-- `assets/menu-wheel.svg`  
-  The SVG artwork used in the startup menu's rotating wheel graphic.
-
-## Gameplay Notes
-
-The prototype uses a compact in-code puzzle list located in `src/Game.jsx`. At runtime, the game selects three random puzzles without repetition and cycles through them across the session. Each player shares the same board, and the active player can spin the wheel, buy vowels, guess consonants, or attempt a full solve.
-
-The game logic includes:
-
-- Randomized puzzle order
-- Wheel spin behavior with special tile handling
-- Per-player round totals and bank totals
-- Correct-letter scoring based on wheel value
-- Full-round reset and replay flow
-
-## Design and Architecture
-
-The application is intentionally simple and intentionally organized around a single core game component:
-
-- `App.jsx` handles navigation between menu and session screens
-- `Game.jsx` owns the stateful gameplay rules
-- `Game.css` contains the full visual system for the game board and wheel
-- `Menu.css` handles the intro screen look and feel
-
-This separation keeps the experience straightforward to follow and easy to extend as the game grows.
-
-## Future Improvements
-
-The project is a strong baseline for future enhancements, including:
-
-- More complete round flow and bonus rounds
-- Larger puzzle bank and better puzzle sourcing
-- Puzzle editor or import functionality
-- Sound effects and richer animations
-- Persistent local score tracking or leaderboard support
-- Automated tests around game logic and rule validation
-- Improved accessibility and keyboard-first interactions
+- [KPROsoft21](https://github.com/KPROsoft21)
+- [Gabriel-Robinson](https://github.com/Gabriel-Robinson)
+- [Munozd4](https://github.com/Munozd4)
 
 ## Contributing
 
-Contributions are welcome. If you want to expand the game, consider the following workflow:
+Contributions are welcome. If you’d like to improve the app, please follow this workflow:
 
 1. Fork the repository
 2. Create a feature branch
-3. Make your changes and keep the code readable
+3. Make your changes and keep the code readable and maintainable
 4. Run lint and build checks
-5. Open a pull request with a clear summary of the update
-
-## Notes
-
-- The app is intentionally built as a prototype and not as a full production game system
-- The codebase is documented inline to make extension easier for future engineers
-- Vite may output a Node version warning depending on the local environment; using a newer LTS version is recommended
+5. Open a pull request with a clear description of the update
 
 ## License
 
-This project does not currently include a repository license file. If you plan to reuse or distribute this project publicly, confirm the licensing status with the project owner before doing so.
+This repository does not currently include a license file. If you plan to reuse, modify, or distribute the project in a public or commercial setting, please confirm the appropriate licensing terms with the project owner before doing so.
+
+## Notes
+
+- The project is intentionally built as a prototype and is not a full production game platform
+- The gameplay rules and UI are designed to be easy to understand and extend
+- Vite may show a Node version warning depending on local environment setup; using a newer LTS version is recommended
 
 ---
 
-Built as a readable, extensible React game prototype for the Wheel of Fortune gameplay experience.
+Built with React, Vite, and a classic game loop inspired by Wheel of Fortune.
