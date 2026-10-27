@@ -5,8 +5,11 @@ export default function MockAd({ size = [220, 80] }) {
   const [width, height] = size;
   const [position, setPosition] = useState({ top: 0, left: 0 });
   const [visible, setVisible] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
+    if (dismissed) return;
+
     let showTimer;
     let hideTimer;
 
@@ -39,7 +42,7 @@ export default function MockAd({ size = [220, 80] }) {
       clearTimeout(showTimer);
       clearTimeout(hideTimer);
     };
-  }, [width, height]);
+  }, [width, height, dismissed]);
 
   if (!visible) return null;
 
@@ -107,6 +110,23 @@ export default function MockAd({ size = [220, 80] }) {
         }}
       >
         Learn More
+      </button>
+      <button
+        type="button"
+        aria-label="Close ad"
+        onClick={() => {
+          setDismissed(true);
+          setVisible(false);
+        }}
+        style={{
+          background: "transparent",
+          color: "white",
+          border: "none",
+          cursor: "pointer",
+          fontSize: "20px",
+        }}
+      >
+        ×
       </button>
     </div>
   );
