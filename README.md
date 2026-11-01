@@ -175,5 +175,6 @@ This repository does not currently include a license file. If you plan to reuse,
 ---
 
 <div align="center">
+  <p><a href="https://trello.com/invite/b/6ac3ddf07c5af9ea3668665c/ATTIdb8f408b0a4b30743dd8cd50c532bf58E6161D6C/team-lebron">Trello Link</a></p>
   <p><em>Built with React, Vite, and a classic Wheel of Fortune-inspired game loop.</em></p>
 </div>
