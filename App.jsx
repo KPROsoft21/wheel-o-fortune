@@ -24,7 +24,8 @@ const wheelValues = [
   750,
   1000,
   500,
-]
+].sort(() => Math.random()-0.5)
+
 
 
 // These helper lists make it easy to tell vowels and consonants apart.
@@ -72,6 +73,8 @@ function normalizeAnswer(value) {
 }
 
 function App() {
+  const [randomWheel, setRandomWheel] = useState(wheelValues)
+
   //variables used to create the pop up alert for winner
   const[showWinner, setShowWinner] = useState(false)
 
