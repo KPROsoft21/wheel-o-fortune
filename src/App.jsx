@@ -6,6 +6,7 @@ function App() {
   // The initial state of the screen is menu
   const [screen, setScreen] = useState('menu');
 
+
   function startGame() {
     setScreen('game');
   }
