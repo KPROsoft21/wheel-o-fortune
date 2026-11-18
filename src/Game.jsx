@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import MockAd from './MockAd';
+import PuzzleBoard from './PuzzleBoard';
 import './Game.css'
 
 // These are the sample puzzles the game can cycle through.
@@ -326,171 +327,162 @@ function Game() {
   return (
     //header for ads
     <>
-    <header className ="ad-slot">
-      <MockAd size = {[728, 90]} />
-    </header>
-    {/* Main page wrapper: board on the left, wheel/actions on the right.*/}
-    <main className="game-shell">
-      {/* Main gameplay area with category, puzzle board, solve form, and letters. */}
-      <section className="board-section">
-        {/* Header shows the puzzle category and the current money totals. */}
-        <div className="game-header">
-          <div>
-            <p className="eyebrow">Wheel of Fortune · Round {roundIndex + 1} of {totalRounds}</p>
-            <h1>{puzzle.category}</h1>
-          </div>
-        </div>
-
-        <div className="scoreboard" aria-label="Player scores">
-          {players.map((player, index) => (
-            <div
-              className={`player-score${index === activePlayer && !isSolved ? ' active' : ''}${gameOver && winners.some((winner) => winner.name === player.name) ? ' winner' : ''}`}
-              key={player.name}
-              aria-current={index === activePlayer && !isSolved ? 'true' : undefined}
-            >
-              <strong>{player.name}{index === activePlayer && !isSolved ? ' · Playing' : ''}</strong>
-              <span>Round ${player.roundTotal}</span>
-              <span>Bank ${player.bank}</span>
+      <header className="ad-slot">
+        <MockAd size={[728, 90]} />
+      </header>
+      {/* Main page wrapper: board on the left, wheel/actions on the right.*/}
+      <main className="game-shell">
+        {/* Main gameplay area with category, puzzle board, solve form, and letters. */}
+        <section className="board-section">
+          {/* Header shows the puzzle category and the current money totals. */}
+          <div className="game-header">
+            <div>
+              <p className="eyebrow">Wheel of Fortune · Round {roundIndex + 1} of {totalRounds}</p>
+              <h1>{puzzle.category}</h1>
             </div>
-          ))}
-        </div>
+          </div>
 
-        <div className="puzzle-marquee">
-          {/* The puzzle board creates one tile per character in the answer. */}
-          <div className="puzzle-board" aria-label="Puzzle board">
-            {boardRows.map((row, rowIndex) => (
-              <div className={`puzzle-row${row.length === 12 ? ' short' : ''}`} key={rowIndex}>
-                {row.map((char, index) => (
-                  <span className={/[A-Z]/.test(char) ? 'tile letter' : 'tile'} key={index}>
-                    {(guessedLetters.includes(char) || isSolved) && /[A-Z]/.test(char) ? char : ''}
-                  </span>
-                ))}
+          <div className="scoreboard" aria-label="Player scores">
+            {players.map((player, index) => (
+              <div
+                className={`player-score${index === activePlayer && !isSolved ? ' active' : ''}${gameOver && winners.some((winner) => winner.name === player.name) ? ' winner' : ''}`}
+                key={player.name}
+                aria-current={index === activePlayer && !isSolved ? 'true' : undefined}
+              >
+                <strong>{player.name}{index === activePlayer && !isSolved ? ' · Playing' : ''}</strong>
+                <span>Round ${player.roundTotal}</span>
+                <span>Bank ${player.bank}</span>
               </div>
             ))}
           </div>
-        </div>
 
-        {/* aria-live lets screen readers announce game messages as they change. */}
-        <p className="status" aria-live="polite">
-          {message}
-        </p>
-
-        {gameOver && <p className="game-result" role="status">Final result after {totalRounds} rounds: {winnerMessage}</p>}
-
-        {/* Players can type the full answer here when they think they know it. */}
-        <form className="solve-form" onSubmit={solvePuzzle}>
-          <input
-            value={solveGuess}
-            onChange={(event) => setSolveGuess(event.target.value)}
-            placeholder="Solve the puzzle"
-            aria-label="Solve the puzzle"
-            disabled={isSolved || isSpinning}
+          <PuzzleBoard
+            boardRows={boardRows}
+            revealedLetters={guessedLetters}
+            isSolved={isSolved}
           />
-          <button type="submit" disabled={isSolved || isSpinning}>Solve</button>
-        </form>
+          
+          {/* aria-live lets screen readers announce game messages as they change. */}
+          <p className="status" aria-live="polite">
+            {message}
+          </p>
 
-        {/* Letter buttons are disabled until the game rules allow that letter. */}
-        <div className="letter-grid" aria-label="Letter guesses">
-          {alphabet.map((letter) => {
-            const isVowel = vowels.includes(letter)
-            const canPickConsonant = typeof spinValue === 'number' && !isVowel
-            const canPickVowel = isVowel && canBuyVowel && isBuyingVowel
+          {gameOver && <p className="game-result" role="status">Final result after {totalRounds} rounds: {winnerMessage}</p>}
 
-            // Consonants require a money spin; vowels require enough round cash.
-            const disabled =
-              guessedLetters.includes(letter) ||
-              isSolved ||
-              isSpinning ||
-              (!canPickConsonant && !canPickVowel)
+          {/* Players can type the full answer here when they think they know it. */}
+          <form className="solve-form" onSubmit={solvePuzzle}>
+            <input
+              value={solveGuess}
+              onChange={(event) => setSolveGuess(event.target.value)}
+              placeholder="Solve the puzzle"
+              aria-label="Solve the puzzle"
+              disabled={isSolved || isSpinning}
+            />
+            <button type="submit" disabled={isSolved || isSpinning}>Solve</button>
+          </form>
 
-            return (
-              <button
-                className={isVowel ? 'vowel' : ''}
-                disabled={disabled}
-                key={letter}
-                type="button"
-                onClick={() => guessLetter(letter)}
-                title={isVowel ? 'Buy vowel for $250' : 'Guess consonant'}
-              >
-                {letter}
-              </button>
-            )
-          })}
-        </div>
-      </section>
+          {/* Letter buttons are disabled until the game rules allow that letter. */}
+          <div className="letter-grid" aria-label="Letter guesses">
+            {alphabet.map((letter) => {
+              const isVowel = vowels.includes(letter)
+              const canPickConsonant = typeof spinValue === 'number' && !isVowel
+              const canPickVowel = isVowel && canBuyVowel && isBuyingVowel
 
-      {/* Side panel contains the spinning wheel and round control buttons. */}
-      <aside className="wheel-panel">
-        <div className="wheel-wrap">
-          <div className="pointer" aria-hidden="true" />
-          <div
-            className="wheel"
-            style={{
-              background: buildWheelGradient(),
-              transform: `rotate(${rotation}deg)`,
-            }}
-          >
-            {wheelValues.map((value, index) => {
-              // Labels sit at the center angle of their matching wheel segment.
-              const angle =
-                wheelStartAngle + index * wheelSliceAngle + wheelSliceAngle / 2
+              // Consonants require a money spin; vowels require enough round cash.
+              const disabled =
+                guessedLetters.includes(letter) ||
+                isSolved ||
+                isSpinning ||
+                (!canPickConsonant && !canPickVowel)
 
               return (
-                <span
-                  className="slice-label"
-                  key={`${value}-${index}`}
-                  style={{ transform: `rotate(${angle}deg)` }}
+                <button
+                  className={isVowel ? 'vowel' : ''}
+                  disabled={disabled}
+                  key={letter}
+                  type="button"
+                  onClick={() => guessLetter(letter)}
+                  title={isVowel ? 'Buy vowel for $250' : 'Guess consonant'}
                 >
-                  {/* Show dollar signs only for numeric wheel values. */}
-                  <b>{typeof value === 'number' ? `$${value}` : value}</b>
-                </span>
+                  {letter}
+                </button>
               )
             })}
-            <div className="wheel-center">SPIN</div>
           </div>
-        </div>
+        </section>
 
-        {/* Buttons for the main testing/demo actions. */}
-        <div className="actions">
-          <button
-            className="vowel-button"
-            type="button"
-            onClick={() => {
-              setIsBuyingVowel((current) => !current)
-              setMessage(isBuyingVowel ? 'Spin the wheel or solve the puzzle.' : 'Choose a vowel. It costs $250.')
-            }}
-            disabled={!canBuyVowel}
-          >
-            {isBuyingVowel ? 'Cancel Vowel' : 'Buy a Vowel · $250'}
-          </button>
-          <button
-            className="spin-button"
-            type="button"
-            onClick={spinWheel}
-            disabled={isSpinning || isSolved || spinValue !== null || isBuyingVowel}
-          >
-            {isSpinning ? 'Spinning...' : 'Spin Wheel'}
-          </button>
-          {gameOver ? (
-            <button type="button" onClick={newGame}>Play Again</button>
-          ) : (
-            <>
-              <button type="button" onClick={nextRound} disabled={!isSolved || isSpinning}>
-                Next Round
-              </button>
-              <button type="button" onClick={() => resetRound()} disabled={isSpinning || isSolved}>
-                Reset Round
-              </button>
-            </>
-          )}
-        </div>
-      </aside>
-    </main>
+        {/* Side panel contains the spinning wheel and round control buttons. */}
+        <aside className="wheel-panel">
+          <div className="wheel-wrap">
+            <div className="pointer" aria-hidden="true" />
+            <div
+              className="wheel"
+              style={{
+                background: buildWheelGradient(),
+                transform: `rotate(${rotation}deg)`,
+              }}
+            >
+              {wheelValues.map((value, index) => {
+                // Labels sit at the center angle of their matching wheel segment.
+                const angle =
+                  wheelStartAngle + index * wheelSliceAngle + wheelSliceAngle / 2
+
+                return (
+                  <span
+                    className="slice-label"
+                    key={`${value}-${index}`}
+                    style={{ transform: `rotate(${angle}deg)` }}
+                  >
+                    {/* Show dollar signs only for numeric wheel values. */}
+                    <b>{typeof value === 'number' ? `$${value}` : value}</b>
+                  </span>
+                )
+              })}
+              <div className="wheel-center">SPIN</div>
+            </div>
+          </div>
+
+          {/* Buttons for the main testing/demo actions. */}
+          <div className="actions">
+            <button
+              className="vowel-button"
+              type="button"
+              onClick={() => {
+                setIsBuyingVowel((current) => !current)
+                setMessage(isBuyingVowel ? 'Spin the wheel or solve the puzzle.' : 'Choose a vowel. It costs $250.')
+              }}
+              disabled={!canBuyVowel}
+            >
+              {isBuyingVowel ? 'Cancel Vowel' : 'Buy a Vowel · $250'}
+            </button>
+            <button
+              className="spin-button"
+              type="button"
+              onClick={spinWheel}
+              disabled={isSpinning || isSolved || spinValue !== null || isBuyingVowel}
+            >
+              {isSpinning ? 'Spinning...' : 'Spin Wheel'}
+            </button>
+            {gameOver ? (
+              <button type="button" onClick={newGame}>Play Again</button>
+            ) : (
+              <>
+                <button type="button" onClick={nextRound} disabled={!isSolved || isSpinning}>
+                  Next Round
+                </button>
+                <button type="button" onClick={() => resetRound()} disabled={isSpinning || isSolved}>
+                  Reset Round
+                </button>
+              </>
+            )}
+          </div>
+        </aside>
+      </main>
     </>
   )
-  
 
-  
+
+
 }
 
 export default Game;
